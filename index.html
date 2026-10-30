@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Calculator</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            font-family: Arial, sans-serif;
+        }
+
+        .calculator {
+            width: 320px;
+            padding: 22px;
+            border-radius: 25px;
+            background: #1e293b;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #display {
+            width: 100%;
+            height: 75px;
+            margin-bottom: 18px;
+            padding: 15px;
+            border: none;
+            outline: none;
+            border-radius: 12px;
+            background: #0f172a;
+            color: white;
+            text-align: right;
+            font-size: 30px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            height: 60px;
+            border: none;
+            border-radius: 12px;
+            background: #334155;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #475569;
+            transform: scale(1.04);
+        }
+
+        .operator {
+            background: #f59e0b;
+        }
+
+        .special {
+            background: #64748b;
+        }
+
+        .equal {
+            background: #10b981;
+            grid-row: span 2;
+            height: 130px;
+        }
+
+        .zero {
+            grid-column: span 2;
+        }
+
+        footer {
+            color: #cbd5e1;
+            text-align: center;
+            font-size: 12px;
+            margin-top: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="calculator">
+        <h2>My Calculator</h2>
+
+        <input type="text" id="display" value="0" readonly>
+
+        <div class="buttons">
+            <button class="special" onclick="clearDisplay()">AC</button>
+            <button class="special" onclick="deleteLast()">DEL</button>
+            <button class="special" onclick="percentage()">%</button>
+            <button class="operator" onclick="chooseOperator('/')">÷</button>
+
+            <button onclick="addNumber('7')">7</button>
+            <button onclick="addNumber('8')">8</button>
+            <button onclick="addNumber('9')">9</button>
+            <button class="operator" onclick="chooseOperator('*')">×</button>
+
+            <button onclick="addNumber('4')">4</button>
+            <button onclick="addNumber('5')">5</button>
+            <button onclick="addNumber('6')">6</button>
+            <button class="operator" onclick="chooseOperator('-')">−</button>
+
+            <button onclick="addNumber('1')">1</button>
+            <button onclick="addNumber('2')">2</button>
+            <button onclick="addNumber('3')">3</button>
+            <button class="operator" onclick="chooseOperator('+')">+</button>
+
+            <button class="zero" onclick="addNumber('0')">0</button>
+            <button onclick="addNumber('.')">.</button>
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+
+        <footer>Designed with HTML, CSS & JavaScript</footer>
+    </div>
+
+    <script>
+        const display = document.getElementById("display");
+
+        let firstNumber = null;
+        let operator = null;
+        let shouldReset = false;
+
+        function addNumber(number) {
+            if (shouldReset) {
+                display.value = number === "." ? "0." : number;
+                shouldReset = false;
+                return;
+            }
+
+            if (number === "." && display.value.includes(".")) return;
+
+            if (display.value === "0" && number !== ".") {
+                display.value = number;
+            } else {
+                display.value += number;
+            }
+        }
+
+        function chooseOperator(selectedOperator) {
+            firstNumber = parseFloat(display.value);
+            operator = selectedOperator;
+            shouldReset = true;
+        }
+
+        function calculate() {
+            if (operator === null || firstNumber === null) return;
+
+            const secondNumber = parseFloat(display.value);
+            let result;
+
+            switch (operator) {
+                case "+":
+                    result = firstNumber + secondNumber;
+                    break;
+                case "-":
+                    result = firstNumber - secondNumber;
+                    break;
+                case "*":
+                    result = firstNumber * secondNumber;
+                    break;
+                case "/":
+                    result = secondNumber === 0
+                        ? "Error"
+                        : firstNumber / secondNumber;
+                    break;
+            }
+
+            display.value = typeof result === "number"
+                ? String(Number(result.toPrecision(10)))
+                : result;
+
+            firstNumber = null;
+            operator = null;
+            shouldReset = true;
+        }
+
+        function clearDisplay() {
+            display.value = "0";
+            firstNumber = null;
+            operator = null;
+            shouldReset = false;
+        }
+
+        function deleteLast() {
+            if (shouldReset || display.value === "Error") {
+                display.value = "0";
+                shouldReset = false;
+                return;
+            }
+
+            display.value = display.value.length > 1
+                ? display.value.slice(0, -1)
+                : "0";
+        }
+
+        function percentage() {
+            display.value = String(parseFloat(display.value) / 100);
+        }
+    </script>
+
+</body>
+</html>
